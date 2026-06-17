@@ -106,7 +106,7 @@ public class PeliculaServiceImpl implements PeliculaService{
             System.out.println("===========================================");
             
         } catch (NullPointerException e) {
-            System.out.println("Error de datos: Alguna de las películas en la sala " + codigoSala + " tiene la fecha de proyección o la duración en blanco (null).");
+            System.out.println("Error de datos: Alguna de las películas en la sala mencionada " + codigoSala + " tiene la fecha de proyección o la duración en blanco (null).");
         } catch (Exception e) {
             System.out.println("Error inesperado al cargar la programación de la sala " + codigoSala + ": " + e.getMessage());
         }        
