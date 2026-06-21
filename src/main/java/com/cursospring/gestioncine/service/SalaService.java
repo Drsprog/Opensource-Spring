@@ -4,5 +4,5 @@ import com.cursospring.gestioncine.entity.Sala;
 
 public interface SalaService {
     Sala guardarSala(Sala sala);
-    void calcularOcupacionEstimada(String codigoSala);
+    Double calcularOcupacionEstimada(String codigoSala);
 }

@@ -24,32 +24,38 @@ public class SalaServiceImpl implements SalaService {
     }
 
     @Override
-    public void calcularOcupacionEstimada(String codigoSala) {
+    public Double calcularOcupacionEstimada(String codigoSala) {
         Optional<Sala> salaOptional = salaRepository.findByCodigo(codigoSala);
 
-        if(salaOptional.isEmpty()){
-            System.out.println("ERROR: La sala con el codigo: " + codigoSala + "no existe");
-            return;
+        if (salaOptional.isEmpty()) {
+            throw new IllegalArgumentException("La sala con el código '" + codigoSala + "' no existe.");
         }
 
-        Sala sala= salaOptional.get();
-    
-        Long minutosTotalesOperativos = Duration.between(sala.getHoraApertura(), sala.getHoraCierre()).toMinutes();
-
-        List<Pelicula> peliculasAsignadas= sala.getPeliculas();
-        Long minutosOcupados = (long) 0;
-        for(Pelicula p: peliculasAsignadas){
-            minutosOcupados+=p.getDuracionMinutos();
+        Sala sala = salaOptional.get();
+        if (sala.getHoraApertura() == null || sala.getHoraCierre() == null) {
+            throw new IllegalArgumentException("La sala no tiene horario de apertura o cierre configurado.");
         }
 
-        Double porcentajeOcupacion= ((double) minutosOcupados*100) / minutosTotalesOperativos;
+        long minutosTotalesOperativos = Duration.between(sala.getHoraApertura(), sala.getHoraCierre()).toMinutes();
+        if (minutosTotalesOperativos < 0) {
+            minutosTotalesOperativos += 24 * 60;
+        }
 
-        System.out.println("\n=== REPORTE DE OCUPACIÓN: SALA " + codigoSala + " ===");
-        System.out.println("Horario operativo: " + sala.getHoraApertura() + " a " + sala.getHoraCierre());
-        System.out.println("Tiempo disponible: " + minutosTotalesOperativos + " minutos.");
-        System.out.println("Tiempo ocupado   : " + minutosOcupados + " minutos.");
-        System.out.printf("Porcentaje Uso   : %.2f%%\n", porcentajeOcupacion);
-        System.out.println("=================================================");
+        if (minutosTotalesOperativos <= 0) {
+            return 0.0;
+        }
+
+        List<Pelicula> peliculasAsignadas = sala.getPeliculas();
+        long minutosOcupados = 0;
+        if (peliculasAsignadas != null) {
+            for (Pelicula p : peliculasAsignadas) {
+                if (p.getDuracionMinutos() != null) {
+                    minutosOcupados += p.getDuracionMinutos();
+                }
+            }
+        }
+
+        return ((double) minutosOcupados * 100.0) / minutosTotalesOperativos;
     }
 
 }

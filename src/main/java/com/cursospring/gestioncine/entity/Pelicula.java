@@ -2,13 +2,16 @@ package com.cursospring.gestioncine.entity;
 
 import java.time.LocalDateTime;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import jakarta.persistence.Transient;
 
 @Entity
 @Table(name = "peliculas")
@@ -16,17 +19,32 @@ public class Pelicula {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "idPelicula")
     private Integer id;
+
+    @Column(name = "titulo")
     private String titulo;
+
+    @Column(name = "director")
     private String director;
+
+    @Column(name = "duracionMinutos")
     private Integer duracionMinutos;
+
+    @Column(name = "genero")
     private String genero;
+
+    @Column(name = "anioEstreno")
     private Integer anioEstreno;
+
+    @Column(name = "paisOrigen")
     private String paisOrigen;
+
+    @Column(name = "horaProyeccion")
     private LocalDateTime horaProyeccion;
 
-    @ManyToOne
-    @JoinColumn(name = "idSala")
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "sala_id")
     private Sala sala;
 
     public Pelicula() {
@@ -111,5 +129,12 @@ public class Pelicula {
     public void setSala(Sala sala) {
         this.sala = sala;
     }
-    
+
+    @Transient
+    public LocalDateTime getHoraFinCalculada() {
+        if (this.horaProyeccion == null || this.duracionMinutos == null) {
+            return null;
+        }
+        return this.horaProyeccion.plusMinutes(this.duracionMinutos);
+    }
 }

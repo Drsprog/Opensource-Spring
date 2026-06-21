@@ -11,14 +11,25 @@ public class Sala {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "idSala")
     private Integer id;
+
+    @Column(name = "codigo")
     private String codigo;
+
+    @Column(name = "capacidad")
     private Integer capacidad;
+
+    @Column(name = "tipoPantalla")
     private String tipoPantalla;
+
+    @Column(name = "horaApertura")
     private LocalTime horaApertura;
+
+    @Column(name = "horaCierre")
     private LocalTime horaCierre;
 
-    @OneToMany(mappedBy = "sala")
+    @OneToMany(mappedBy = "sala", cascade = CascadeType.ALL, orphanRemoval = true,  fetch = FetchType.LAZY)
     private List<Pelicula> peliculas;
     
     //Constructores
